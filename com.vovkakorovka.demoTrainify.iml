@@ -11,10 +11,10 @@
     <orderEntry type="library" name="automaton-1.11-8" level="project" />
     <orderEntry type="library" name="commons-lang3-3.5" level="project" />
     <orderEntry type="library" name="generex-1.0.2" level="project" />
-    <orderEntry type="library" name="gson-2.11.0" level="project" />
     <orderEntry type="library" name="javafaker-1.0.2" level="project" />
     <orderEntry type="library" name="snakeyaml-1.23-android" level="project" />
-    <orderEntry type="library" name="jakarta.activation-api-2.0.1" level="project" />
+    <orderEntry type="library" name="jakarta.activation-2.0.1" level="project" />
     <orderEntry type="library" name="jakarta.mail-2.0.1" level="project" />
+    <orderEntry type="library" name="gson-2.11.0" level="project" />
   </component>
 </module>

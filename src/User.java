@@ -3,13 +3,13 @@ public class User {
     private String id;
     private String name;
     private String password;
-    private String role;
+    private String email;
 
-    public User(String id, String name, String password, String role) {
-        this.id = id;
-        this.name = name;
-        this.password = password;
-        this.role = role;
+    public User(String id, String name, String password, String email) {
+        setId(id);
+        setName(name);
+        setPassword(password);
+        setEmail(email);
     }
 
     public String getId() {
@@ -36,11 +36,11 @@ public class User {
         this.password = password;
     }
 
-    public String getRole() {
-        return role;
+    public String getEmail() {
+        return email;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

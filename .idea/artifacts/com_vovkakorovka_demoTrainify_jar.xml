@@ -1,0 +1,17 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="com.vovkakorovka.demoTrainify:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/com_vovkakorovka_demoTrainify_jar</output-path>
+    <root id="archive" name="com.vovkakorovka.demoTrainify.jar">
+      <element id="module-output" name="com.vovkakorovka.demoTrainify" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/generex-1.0.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/angus-activation-2.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/jakarta.activation-2.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/snakeyaml-1.23-android.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/automaton-1.11-8.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/gson-2.11.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/commons-lang3-3.5.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/javafaker-1.0.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/jakarta.mail-2.0.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

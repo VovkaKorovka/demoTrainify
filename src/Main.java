@@ -1,30 +1,88 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Scanner;
 
 public class Main {
 
+    private static final Scanner scanner = new Scanner(System.in);
+    private static final UserService userService = new UserService();
+
     public static void main(String[] args) {
-        List<User> users = new ArrayList<>();
-        List<TrainingPlan> trainingPlans = new ArrayList<>();
-        List<Workout> workouts = new ArrayList<>();
-        List<Exercise> exercises = new ArrayList<>();
+        boolean running = true;
 
-        User user = FakeDataGenerator.generateFakeUser();
-        users.add(user);
+        while (running) {
+            showMenu();
 
-        TrainingPlan trainingPlan = FakeDataGenerator.generateFakeTrainingPlan(user.getId());
-        trainingPlans.add(trainingPlan);
+            String choice = scanner.nextLine();
 
-        Workout workout = FakeDataGenerator.generateFakeWorkout(trainingPlan.getId());
-        workouts.add(workout);
+            switch (choice) {
+                case "1":
+                    handleRegistration();
+                    break;
+                case "2":
+                    handleLogin();
+                    break;
+                case "3":
+                    System.out.println("До побачення!");
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Невірний вибір. Спробуйте ще раз.");
+            }
+        }
+    }
 
-        Exercise exercise = FakeDataGenerator.generateFakeExercise(workout.getId());
-        exercises.add(exercise);
+    private static void showMenu() {
+        System.out.println("=== Меню ===");
+        System.out.println("1. Реєстрація");
+        System.out.println("2. Вхід до системи");
+        System.out.println("3. Вийти з програми");
+        System.out.print("Оберіть опцію: ");
+    }
 
-        FileSaver.saveUsersToJSON(users, "users.json");
-        FileSaver.saveTrainingPlansToJSON(trainingPlans, "training_plans.json");
-        FileSaver.saveWorkoutsToJSON(workouts, "workouts.json");
-        FileSaver.saveExercisesToJSON(exercises, "exercises.json");
-        System.out.println("Дані збережено в JSON файли!!!");
+    private static void handleRegistration() {
+        String name = userService.getValidatedInput("Введіть ім'я користувача(3-20 символів): ",
+            "name");
+        String password = userService.getValidatedInput(
+            "Введіть пароль(6-20 символів і хоча б одну цифру): ", "password");
+        String email = userService.getValidatedInput("Введіть email(для подальшої перевірки): ",
+            "email");
+
+        if (userService.register(name, password, email)) {
+            System.out.println("Реєстрація успішна!");
+            clearConsole();
+            TrainifyMenu.showUserMenu(name);
+        } else {
+            System.out.println("Помилка при реєстрації.");
+        }
+    }
+
+    private static void clearConsole() {
+        try {
+            String os = System.getProperty("os.name").toLowerCase();
+            if (os.contains("win")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+        } catch (Exception e) {
+            System.out.println("Не вдалося очистити консоль.");
+        }
+        for (int i = 0; i < 50; i++) {
+            System.out.println();
+        }
+    }
+
+    private static void handleLogin() {
+        String name = userService.getValidatedInput("Введіть ім'я користувача: ", "name");
+        String password = userService.getValidatedInput("Введіть пароль: ", "password");
+
+        if (userService.login(name, password)) {
+            System.out.println("Вхід виконано успішно! Вітаємо, " + name + "!");
+            clearConsole();
+            TrainifyMenu.showUserMenu(name);
+        } else {
+            clearConsole();
+            System.out.println("Невірне ім'я користувача або пароль.");
+        }
     }
 }
