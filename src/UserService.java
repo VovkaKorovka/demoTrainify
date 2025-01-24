@@ -56,6 +56,10 @@ public class UserService {
     }
 
     public boolean register(String name, String password, String email) {
+        if (name == null || password == null || email == null) {
+            return false;
+        }
+
         if (users.stream().anyMatch(user -> user.getName().equalsIgnoreCase(name))) {
             clearConsole();
             System.out.println("Користувач із таким ім'ям вже існує.");
@@ -65,26 +69,6 @@ public class UserService {
         if (users.stream().anyMatch(user -> user.getEmail().equalsIgnoreCase(email))) {
             clearConsole();
             System.out.println("Користувач із такою email адресою вже існує.");
-            return false;
-        }
-
-        if (!isValidPassword(password)) {
-            clearConsole();
-            System.out.println(
-                "Некоректний пароль. Він має містити від 6 до 20 символів і хоча б одну цифру.");
-            return false;
-        }
-
-        if (!isValidName(name)) {
-            clearConsole();
-            System.out.println(
-                "Ім'я має бути від 3 до 20 символів, може містити тільки літери, цифри та підкреслення.");
-            return false;
-        }
-
-        if (!isValidEmail(email)) {
-            clearConsole();
-            System.out.println("Некоректна email адреса.");
             return false;
         }
 
@@ -123,8 +107,13 @@ public class UserService {
     public String getValidatedInput(String prompt, String fieldType) {
         String input;
         while (true) {
-            System.out.print(prompt);
+            System.out.print(prompt + " (Або введіть 0, щоб повернутись в меню): ");
             input = scanner.nextLine();
+
+            if ("0".equals(input)) {
+                clearConsole();
+                return null;
+            }
 
             switch (fieldType) {
                 case "name":

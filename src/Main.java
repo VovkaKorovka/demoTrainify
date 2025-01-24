@@ -25,7 +25,7 @@ public class Main {
                     running = false;
                     break;
                 default:
-                    clearConsole(); // Очищення консолі
+                    clearConsole();
                     System.out.println("Невірний вибір. Спробуйте ще раз.");
             }
         }
@@ -40,12 +40,23 @@ public class Main {
     }
 
     private static void handleRegistration() {
-        String name = userService.getValidatedInput("Введіть ім'я користувача(3-20 символів): ",
+        String name = userService.getValidatedInput("Введіть ім'я користувача (3-20 символів): ",
             "name");
+        if (name == null) {
+            return;
+        }
+
         String password = userService.getValidatedInput(
-            "Введіть пароль(6-20 символів і хоча б одну цифру): ", "password");
-        String email = userService.getValidatedInput("Введіть email(для подальшої перевірки): ",
+            "Введіть пароль (6-20 символів і хоча б одну цифру): ", "password");
+        if (password == null) {
+            return;
+        }
+
+        String email = userService.getValidatedInput("Введіть email (для подальшої перевірки): ",
             "email");
+        if (email == null) {
+            return;
+        }
 
         if (userService.register(name, password, email)) {
             System.out.println("Реєстрація успішна!");
@@ -75,7 +86,14 @@ public class Main {
 
     private static void handleLogin() {
         String name = userService.getValidatedInput("Введіть ім'я користувача: ", "name");
+        if (name == null) {
+            return;
+        }
+
         String password = userService.getValidatedInput("Введіть пароль: ", "password");
+        if (password == null) {
+            return;
+        }
 
         if (userService.login(name, password)) {
             System.out.println("Вхід виконано успішно! Вітаємо, " + name + "!");
