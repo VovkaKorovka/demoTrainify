@@ -25,6 +25,7 @@ public class Main {
                     running = false;
                     break;
                 default:
+                    clearConsole(); // Очищення консолі
                     System.out.println("Невірний вибір. Спробуйте ще раз.");
             }
         }
