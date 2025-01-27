@@ -1,18 +1,19 @@
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 public class TrainingPlan {
 
-    private String id;
-    private Date startDate;
-    private Date endDate;
+    private final String planId; // поле final, тому не потрібно setId
+    private LocalDate startDate;
+    private LocalDate endDate;
     private String userId;
     private String description;
-    private List<Workout> workouts;
+    private List<Workout> workouts; // Список тренувань має бути типу Workout, а не String
 
-    public TrainingPlan(String id, Date startDate, Date endDate, String userId,
+    // Конструктор
+    public TrainingPlan(String planId, LocalDate startDate, LocalDate endDate, String userId,
         String description, List<Workout> workouts) {
-        this.id = id;
+        this.planId = planId;
         this.startDate = startDate;
         this.endDate = endDate;
         this.userId = userId;
@@ -20,27 +21,23 @@ public class TrainingPlan {
         this.workouts = workouts;
     }
 
-    public String getId() {
-        return id;
+    public String getPlanId() {
+        return planId;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

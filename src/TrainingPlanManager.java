@@ -3,82 +3,63 @@ import com.google.gson.GsonBuilder;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
-import java.util.UUID;
 
 public class TrainingPlanManager {
 
     public static void createTrainingPlan(String userId) {
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())  // Реєстрація адаптера
+            .setPrettyPrinting()  // Зробить серіалізацію "гарною" (з відступами)
+            .create();
         Scanner scanner = new Scanner(System.in);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        LocalDate currentDate = LocalDate.now();
 
-        System.out.print("Введіть дату початку (yyyy-MM-dd): ");
-        String startDateInput = scanner.nextLine();
+        Main.clearConsole();
+        System.out.println("=== Створення нового плану тренувань ===");
 
-        System.out.print("Введіть дату завершення (yyyy-MM-dd): ");
-        String endDateInput = scanner.nextLine();
+        System.out.print("Введіть рік початку плану: ");
+        int year = scanner.nextInt();
+        System.out.print("Введіть місяць початку плану (1-12): ");
+        int month = scanner.nextInt();
+        System.out.print("Введіть день початку плану (1-31): ");
+        int day = scanner.nextInt();
+        scanner.nextLine();
+
+        LocalDate startDate = LocalDate.of(year, month, day);
+
+        if (startDate.isBefore(currentDate)) {
+            Main.clearConsole();
+            System.out.println("Помилка: Дата початку не може бути в минулому.");
+            return;
+        }
 
         System.out.print("Введіть опис нового плану тренувань: ");
         String description = scanner.nextLine();
 
-        Date startDate, endDate;
-        try {
-            startDate = dateFormat.parse(startDateInput);
-            endDate = dateFormat.parse(endDateInput);
-        } catch (ParseException e) {
-            System.out.println("Помилка: Невірний формат дати. Використовуйте формат yyyy-MM-dd.");
+        System.out.print("Введіть рік кінцевої дати: ");
+        int endYear = scanner.nextInt();
+        System.out.print("Введіть місяць кінцевої дати (1-12): ");
+        int endMonth = scanner.nextInt();
+        System.out.print("Введіть день кінцевої дати (1-31): ");
+        int endDay = scanner.nextInt();
+        scanner.nextLine();
+
+        LocalDate endDate = LocalDate.of(endYear, endMonth, endDay);
+
+        if (endDate.isBefore(startDate)) {
+            System.out.println("Помилка: Дата кінця не може бути ранішою за дату початку.");
             return;
         }
 
         List<Workout> workouts = new ArrayList<>();
-        System.out.println("Додайте тренування до плану (введіть 'stop' для завершення):");
-        while (true) {
-            System.out.print("Введіть тип тренування (або 'stop'): ");
-            String workoutType = scanner.nextLine();
-            if ("stop".equalsIgnoreCase(workoutType)) {
-                break;
-            }
 
-            System.out.print("Введіть опис тренування: ");
-            String workoutDescription = scanner.nextLine();
+        String planId = getNextPlanId(userId);
 
-            int duration = -1;
-            while (duration <= 0) {
-                System.out.print("Введіть тривалість тренування (у хвилинах): ");
-                if (scanner.hasNextInt()) {
-                    duration = scanner.nextInt();
-                    if (duration <= 0) {
-                        System.out.println("Тривалість повинна бути додатнім числом.");
-                    }
-                } else {
-                    System.out.println("Будь ласка, введіть число.");
-                    scanner.next();
-                }
-            }
-            scanner.nextLine();
-
-            System.out.print("Введіть дату тренування (yyyy-MM-dd): ");
-            String workoutDateInput = scanner.nextLine();
-            Date workoutDate;
-            try {
-                workoutDate = dateFormat.parse(workoutDateInput);
-            } catch (ParseException e) {
-                System.out.println("Помилка: Невірний формат дати тренування.");
-                return;
-            }
-
-            workouts.add(
-                new Workout(UUID.randomUUID().toString(), workoutType, workoutDescription, duration,
-                    workoutDate));
-        }
-
+        // Шлях до загального файлу з планами
         String userDirPath = "C:\\Users\\payda\\Desktop\\demoTrainify\\Users_Plans\\User(" + userId
             + ")_TrainingPlans";
         File userDir = new File(userDirPath);
@@ -91,57 +72,127 @@ public class TrainingPlanManager {
             }
         }
 
-        int nextPlanId = getNextPlanId(userDir);
+        File jsonFile = new File(userDir, "trainingPlans.json");
+        TrainingPlan newPlan = new TrainingPlan(planId, startDate, endDate, userId, description,
+            workouts);
 
-        String planId = "Training_Plan_" + nextPlanId;
-        TrainingPlan trainingPlan = new TrainingPlan(planId, startDate, endDate, userId,
-            description, workouts);
+        TrainingPlans trainingPlans = new TrainingPlans();
 
-        File jsonFile = new File(userDir, planId + ".json");
+        // Перевірка на наявність файлу
+        if (jsonFile.exists()) {
+            try (Scanner fileScanner = new Scanner(jsonFile)) {
+                String jsonContent = fileScanner.useDelimiter("\\A").next();
+                trainingPlans = gson.fromJson(jsonContent, TrainingPlans.class);
+            } catch (IOException e) {
+                System.out.println("Помилка при зчитуванні існуючих планів: " + e.getMessage());
+                return;
+            }
+        } else {
+            // Якщо файл не існує, створюємо порожній об'єкт
+            trainingPlans = new TrainingPlans();
+        }
+
+        trainingPlans.getPlans().add(newPlan);
+
         try (FileWriter writer = new FileWriter(jsonFile)) {
-            gson.toJson(trainingPlan, writer);
-            System.out.println("Новий план тренувань створено: " + jsonFile.getName());
+            gson.toJson(trainingPlans, writer);
+
+            try {
+                System.out.println("Новий план тренувань створено");
+                Thread.sleep(2000);
+                Main.clearConsole();
+            } catch (InterruptedException e) {
+                System.out.println("Помилка при затримці: " + e.getMessage());
+                Thread.currentThread().interrupt();  // Відновлюємо статус переривання
+            }
         } catch (IOException e) {
-            System.out.println("Помилка при створенні JSON-файлу: " + e.getMessage());
+            System.out.println("Помилка при записі в JSON-файл: " + e.getMessage());
         }
     }
 
-    public static void viewTrainingPlans(String userId) {
+    public static void manageTrainingPlan(String userId) {
+        String userDirPath = "C:\\Users\\payda\\Desktop\\demoTrainify\\Users_Plans\\User(" + userId
+            + ")_TrainingPlans";
+        File userDir = new File(userDirPath);
+        File jsonFile = new File(userDir, "trainingPlans.json");
+
+        if (!jsonFile.exists()) {
+            System.out.println("У вас немає збережених планів тренувань.");
+            return;
+        }
+
+        Gson gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+            .setPrettyPrinting()
+            .create();
+
+        try (Scanner scanner = new Scanner(jsonFile)) {
+            String jsonContent = scanner.useDelimiter("\\A").next();
+            System.out.println("Зчитаний JSON: " + jsonContent);  // Для відлагодження
+            TrainingPlans trainingPlans = gson.fromJson(jsonContent, TrainingPlans.class);
+
+            // Додайте виведення розміру списку та вмісту
+            System.out.println("Кількість планів: " + trainingPlans.getPlans().size());
+            if (trainingPlans.getPlans() == null || trainingPlans.getPlans().isEmpty()) {
+                System.out.println("У вас немає збережених планів тренувань.");
+                return;
+            }
+
+            System.out.println("Ваші плани тренувань:");
+            for (int i = 0; i < trainingPlans.getPlans().size(); i++) {
+                TrainingPlan plan = trainingPlans.getPlans().get(i);
+                System.out.println((i + 1) + " | " + plan.getDescription() +
+                    " | " + plan.getStartDate() + " - " + plan.getEndDate());
+            }
+
+            Scanner input = new Scanner(System.in);
+            System.out.println("Виберіть план за номером, з яким хочете працювати:");
+            int planIndex = input.nextInt() - 1;
+
+            if (planIndex < 0 || planIndex >= trainingPlans.getPlans().size()) {
+                System.out.println("Невірний номер плану.");
+                return;
+            }
+
+            TrainingPlan selectedPlan = trainingPlans.getPlans().get(planIndex);
+            // Передаємо вибраний план у WorkoutManage
+            WorkoutManage.manageWorkouts(selectedPlan, jsonFile, gson, trainingPlans);
+        } catch (IOException e) {
+            System.out.println("Помилка при зчитуванні JSON-файлу: " + e.getMessage());
+        }
+    }
+
+    private static String getNextPlanId(String userId) {
         String userDirPath = "C:\\Users\\payda\\Desktop\\demoTrainify\\Users_Plans\\User(" + userId
             + ")_TrainingPlans";
         File userDir = new File(userDirPath);
 
-        if (!userDir.exists() || !userDir.isDirectory()) {
-            System.out.println("Папка користувача не знайдена або не є директорією.");
-            return;
+        if (!userDir.exists()) {
+            userDir.mkdirs();
         }
 
-        File[] plans = userDir.listFiles((dir, name) -> name.endsWith(".json"));
-        if (plans == null || plans.length == 0) {
-            System.out.println("У вас немає збережених планів тренувань.");
-        } else {
-            System.out.println("Ваші плани тренувань:");
-            Arrays.sort(plans, (f1, f2) -> Long.compare(f2.lastModified(),
-                f1.lastModified()));
-            for (int i = 0; i < plans.length; i++) {
-                System.out.println((i + 1) + ". " + plans[i].getName());
-            }
-            System.out.println(
-                "Введіть ID плану, з яким хочете працювати (або '0' для повернення в меню):");
+        File[] files = userDir.listFiles(
+            (dir, name) -> name.endsWith(".json"));
+        int nextId = 1;
 
-            Scanner scanner = new Scanner(System.in);
-            int selectedPlan = scanner.nextInt();
-
-            if (selectedPlan == 0) {
-                System.out.println("Повернення в меню...");
-            } else if (selectedPlan > 0 && selectedPlan <= plans.length) {
-                File selectedFile = plans[selectedPlan - 1];
-                System.out.println("Ви обрали план: " + selectedFile.getName());
-                viewExistingPlan(userId, selectedFile.getName().replace(".json", ""));
-            } else {
-                System.out.println("Невірний ID. Спробуйте ще раз.");
+        if (files != null && files.length > 0) {
+            int maxId = 0;
+            for (File file : files) {
+                String fileName = file.getName();
+                String idPart = fileName.replace(".json", "");
+                try {
+                    int id = Integer.parseInt(idPart);
+                    if (id > maxId) {
+                        maxId = id;
+                    }
+                } catch (NumberFormatException e) {
+                    // Якщо не вдається перетворити, пропускаємо цей файл
+                }
             }
+            nextId = maxId + 1;
         }
+
+        return String.valueOf(nextId);  // Повертаємо унікальний ID для нового плану
     }
 
     public static void logOut(String userId) {
@@ -170,53 +221,5 @@ public class TrainingPlanManager {
         }
 
         Main.showMenu();
-    }
-
-    public static void viewExistingPlan(String userId, String planId) {
-        String userDirPath = "C:\\Users\\payda\\Desktop\\demoTrainify\\Users_Plans\\User(" + userId
-            + ")_TrainingPlans";
-        File userDir = new File(userDirPath);
-
-        File planFile = new File(userDir, planId + ".json");
-        if (!planFile.exists()) {
-            System.out.println("План тренувань не знайдено.");
-            return;
-        }
-        try (Scanner scanner = new Scanner(planFile)) {
-            String jsonContent = scanner.useDelimiter("\\A").next();
-            TrainingPlan trainingPlan = new Gson().fromJson(jsonContent, TrainingPlan.class);
-            System.out.println("Інформація про план тренувань: ");
-            System.out.println("ID: " + trainingPlan.getId());
-            System.out.println("Опис: " + trainingPlan.getDescription());
-            System.out.println("Дата початку: " + trainingPlan.getStartDate());
-            System.out.println("Дата завершення: " + trainingPlan.getEndDate());
-            for (Workout workout : trainingPlan.getWorkouts()) {
-                System.out.println(workout);
-            }
-        } catch (IOException e) {
-            System.out.println("Помилка при зчитуванні плану: " + e.getMessage());
-        }
-    }
-
-    private static int getNextPlanId(File userDir) {
-        File[] files = userDir.listFiles(
-            (dir, name) -> name.startsWith("Training_Plan_") && name.endsWith(".json"));
-        if (files == null || files.length == 0) {
-            return 1;
-        }
-
-        int maxId = 0;
-        for (File file : files) {
-            String fileName = file.getName();
-            String idPart = fileName.replace("Training_Plan_", "").replace(".json", "");
-            try {
-                int id = Integer.parseInt(idPart);
-                if (id > maxId) {
-                    maxId = id;
-                }
-            } catch (NumberFormatException e) {
-            }
-        }
-        return maxId + 1;
     }
 }

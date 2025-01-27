@@ -2,20 +2,21 @@ import java.util.Date;
 
 public class Workout {
 
-    private String id;
-    private String type;
-    private String description;
-    private int duration;
-    private Date date;
+    private String id;                // Унікальний ідентифікатор тренування
+    private String name;              // Назва тренування
+    private String description;       // Опис тренування
+    private int duration;             // Тривалість тренування у хвилинах
+    private Date date;           // Дата тренування
 
-    public Workout(String id, String type, String description, int duration, Date date) {
+    public Workout(String id, String name, String description, int duration, Date date) {
         this.id = id;
-        this.type = type;
+        this.name = name;
         this.description = description;
         this.duration = duration;
         this.date = date;
     }
 
+    // Геттери та сеттери
     public String getId() {
         return id;
     }
@@ -24,12 +25,12 @@ public class Workout {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getDescription() {
@@ -54,5 +55,16 @@ public class Workout {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    @Override
+    public String toString() {
+        return "Workout{" +
+            "id='" + id + '\'' +
+            ", name='" + name + '\'' +
+            ", description='" + description + '\'' +
+            ", duration=" + duration +
+            ", date=" + date +
+            '}';
     }
 }
