@@ -12,6 +12,7 @@ public class TrainifyMenu {
             System.out.println("1. Створити новий план тренувань");
             System.out.println("2. Переглянути мої плани тренувань");
             System.out.println("3. Вийти з аккаунту");
+            System.out.println("4. Вийти з програми");
             System.out.print("Оберіть опцію: ");
 
             String choice = scanner.nextLine();
@@ -26,6 +27,9 @@ public class TrainifyMenu {
                 case "3":
                     TrainingPlanManager.logOut(userId);
                     break;
+                case "4":
+                    System.out.println("До побачення!");
+                    System.exit(0);
                 default:
                     Main.clearConsole();
                     System.out.println("Невірний вибір. Спробуйте ще раз.");

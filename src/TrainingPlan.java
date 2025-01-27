@@ -3,7 +3,7 @@ import java.util.List;
 
 public class TrainingPlan {
 
-    private final String planId; // поле final, тому не потрібно setId
+    private String planId; // Забираємо final, щоб мати можливість змінювати planId
     private LocalDate startDate;
     private LocalDate endDate;
     private String userId;
@@ -23,6 +23,10 @@ public class TrainingPlan {
 
     public String getPlanId() {
         return planId;
+    }
+
+    public void setPlanId(String planId) {
+        this.planId = planId;  // Тепер є можливість змінювати planId
     }
 
     public LocalDate getStartDate() {
