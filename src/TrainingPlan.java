@@ -11,12 +11,13 @@ public class TrainingPlan {
     private List<Workout> workouts;
 
     public TrainingPlan(String id, Date startDate, Date endDate, String userId,
-        String description) {
+        String description, List<Workout> workouts) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
         this.userId = userId;
         this.description = description;
+        this.workouts = workouts;
     }
 
     public String getId() {

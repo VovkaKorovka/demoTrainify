@@ -4,36 +4,35 @@ public class TrainifyMenu {
 
     private static final Scanner scanner = new Scanner(System.in);
 
-    public static void showUserMenu(String userName) {
+    public static void showUserMenu(String userName, String userId) {
         boolean running = true;
 
         while (running) {
             clearConsole();
             System.out.println("=== Привіт, " + userName + "! ===");
-            System.out.println("1. Переглянути профіль");
-            System.out.println("2. Вийти з системи");
+            System.out.println("1. Створити новий план тренувань");
+            System.out.println("2. Переглянути мої плани тренувань");
+            System.out.println("3. Вийти з аккаунту");
             System.out.print("Оберіть опцію: ");
 
             String choice = scanner.nextLine();
 
             switch (choice) {
                 case "1":
-                    showProfile(userName);
+                    TrainingPlanManager.createTrainingPlan(userId);
                     break;
                 case "2":
-                    System.out.println("До побачення, " + userName + "!");
+                    TrainingPlanManager.viewTrainingPlans(userId);
+                    break;
+                case "3":
+                    TrainingPlanManager.logOut(userId);
                     running = false;
                     break;
                 default:
+                    clearConsole();
                     System.out.println("Невірний вибір. Спробуйте ще раз.");
             }
         }
-    }
-
-    private static void showProfile(String userName) {
-        // Тут можна додати логіку для перегляду профілю користувача
-        System.out.println("Профіль користувача: " + userName);
-        // Задати додаткові дії для користувача
     }
 
     private static void clearConsole() {

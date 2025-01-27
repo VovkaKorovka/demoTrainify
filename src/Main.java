@@ -8,8 +8,45 @@ public class Main {
     public static void main(String[] args) {
         boolean running = true;
 
+        String currentUser = userService.loadCurrentUser();
+        if (currentUser != null) {
+            String userId = userService.getUserIdByName(currentUser);
+            TrainifyMenu.showUserMenu(currentUser, userId);
+        } else {
+            while (running) {
+                showMenu();
+
+                String choice = scanner.nextLine();
+
+                switch (choice) {
+                    case "1":
+                        handleRegistration();
+                        break;
+                    case "2":
+                        handleLogin();
+                        break;
+                    case "3":
+                        System.out.println("До побачення!");
+                        System.exit(0);
+                        break;
+                    default:
+                        clearConsole();
+                        System.out.println("Невірний вибір. Спробуйте ще раз.");
+                }
+            }
+        }
+    }
+
+    public static void showMenu() {
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
+
         while (running) {
-            showMenu();
+            System.out.println("=== Меню ===");
+            System.out.println("1. Реєстрація");
+            System.out.println("2. Вхід до системи");
+            System.out.println("3. Вийти з програми");
+            System.out.print("Оберіть опцію: ");
 
             String choice = scanner.nextLine();
 
@@ -22,21 +59,13 @@ public class Main {
                     break;
                 case "3":
                     System.out.println("До побачення!");
-                    running = false;
+                    System.exit(0);
                     break;
                 default:
                     clearConsole();
                     System.out.println("Невірний вибір. Спробуйте ще раз.");
             }
         }
-    }
-
-    private static void showMenu() {
-        System.out.println("=== Меню ===");
-        System.out.println("1. Реєстрація");
-        System.out.println("2. Вхід до системи");
-        System.out.println("3. Вийти з програми");
-        System.out.print("Оберіть опцію: ");
     }
 
     private static void handleRegistration() {
@@ -61,13 +90,14 @@ public class Main {
         if (userService.register(name, password, email)) {
             System.out.println("Реєстрація успішна!");
             clearConsole();
-            TrainifyMenu.showUserMenu(name);
+            String userId = userService.getUserIdByName(name);
+            TrainifyMenu.showUserMenu(name, userId);
         } else {
             System.out.println("Помилка при реєстрації.");
         }
     }
 
-    private static void clearConsole() {
+    public static void clearConsole() {
         try {
             String os = System.getProperty("os.name").toLowerCase();
             if (os.contains("win")) {
@@ -98,10 +128,12 @@ public class Main {
         if (userService.login(name, password)) {
             System.out.println("Вхід виконано успішно! Вітаємо, " + name + "!");
             clearConsole();
-            TrainifyMenu.showUserMenu(name);
+            String userId = userService.getUserIdByName(name);
+            TrainifyMenu.showUserMenu(name, userId);
         } else {
             clearConsole();
             System.out.println("Невірне ім'я користувача або пароль.");
+            showMenu();
         }
     }
 }

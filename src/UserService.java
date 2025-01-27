@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
@@ -9,6 +10,7 @@ import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -26,6 +28,7 @@ import java.util.Scanner;
 public class UserService {
 
     private static final String FILE_PATH = "C:\\Users\\payda\\Desktop\\demoTrainify\\Data\\users.json";
+    private static final String CONFIG_FILE_PATH = "config.json";
     private static final Scanner scanner = new Scanner(System.in);
     private final List<User> users;
     private final Map<String, VerificationDetails> emailVerificationCodes = new HashMap<>();
@@ -92,6 +95,8 @@ public class UserService {
                     email);
                 users.add(newUser);
                 saveUsersToFile();
+
+                saveCurrentUserToConfig(name, newUser.getId());
                 return true;
             } else {
                 clearConsole();
@@ -102,6 +107,34 @@ public class UserService {
             System.out.println("Помилка реєстрації: " + e.getMessage());
         }
         return false;
+    }
+
+    public String getUserIdByName(String name) {
+        for (User user : users) {
+            if (user.getName().equals(name)) {
+                return user.getId();
+            }
+        }
+        return null;
+    }
+
+    public String loadCurrentUser() {
+        try {
+            File file = new File(CONFIG_FILE_PATH);
+            if (!file.exists()) {
+                return null;
+            }
+
+            try (FileReader reader = new FileReader(CONFIG_FILE_PATH)) {
+                JsonObject config = gson.fromJson(reader, JsonObject.class);
+                if (config != null && config.has("currentUser")) {
+                    return config.get("currentUser").getAsString();
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Помилка при завантаженні конфігурації: " + e.getMessage());
+        }
+        return null;
     }
 
     public String getValidatedInput(String prompt, String fieldType) {
@@ -199,9 +232,23 @@ public class UserService {
 
         if (loggedIn) {
             saveUsersToFile();
+            String userId = getUserIdByName(name);
+            saveCurrentUserToConfig(name, userId);
         }
 
         return loggedIn;
+    }
+
+    private void saveCurrentUserToConfig(String username, String userId) {
+        JsonObject config = new JsonObject();
+        config.addProperty("currentUser", username);
+        config.addProperty("userId", userId);
+
+        try (FileWriter writer = new FileWriter(CONFIG_FILE_PATH)) {
+            gson.toJson(config, writer);
+        } catch (IOException e) {
+            System.out.println("Помилка збереження конфігурації: " + e.getMessage());
+        }
     }
 
     private List<User> loadUsersFromFile() {
@@ -210,7 +257,6 @@ public class UserService {
             }.getType();
             return gson.fromJson(reader, userListType);
         } catch (IOException e) {
-            System.out.println("Помилка завантаження користувачів з файлу: " + e.getMessage());
             return new ArrayList<>();
         }
     }
@@ -218,7 +264,6 @@ public class UserService {
     private void saveUsersToFile() {
         try (FileWriter writer = new FileWriter(FILE_PATH)) {
             gson.toJson(users, writer);
-            System.out.println("Користувачі успішно збережені у файл.");
         } catch (IOException e) {
             System.out.println("Помилка збереження користувачів у файл: " + e.getMessage());
         }
@@ -275,16 +320,17 @@ public class UserService {
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(username));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
-            message.setSubject("Код підтвердження");
+            message.setRecipients(Message.RecipientType.TO,
+                InternetAddress.parse(email));
+            message.setSubject("Код підтвердження реєстрації");
             message.setText("Ваш код підтвердження: " + code);
 
             Transport.send(message);
             return true;
         } catch (MessagingException e) {
-            e.printStackTrace();
-            return false;
+            System.out.println("Помилка при надсиланні email: " + e.getMessage());
         }
+        return false;
     }
 
     private static class VerificationDetails {
@@ -303,6 +349,37 @@ public class UserService {
 
         public long getTimestamp() {
             return timestamp;
+        }
+    }
+
+    private static class User {
+
+        private final String id;
+        private final String name;
+        private final String password;
+        private final String email;
+
+        public User(String id, String name, String password, String email) {
+            this.id = id;
+            this.name = name;
+            this.password = password;
+            this.email = email;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public String getEmail() {
+            return email;
         }
     }
 }
