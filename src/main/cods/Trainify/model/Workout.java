@@ -1,3 +1,5 @@
+package main.cods.Trainify.model;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,10 +9,10 @@ public class Workout {
     private String id;
     private String name;
     private String description;
-    private int duration; // Тривалість у хвилинах
+    private int duration;
     private Date date;
-    private String type; // Тип тренування (наприклад: "Кардіо", "Сила" тощо)
-    private List<Exercise> exercises; // Список вправ
+    private String type;
+    private List<Exercise> exercises;
 
     public Workout(String id, String name, String description, int duration, Date date,
         String type) {
@@ -19,11 +21,10 @@ public class Workout {
         this.description = description;
         this.duration = duration;
         this.date = date;
-        this.type = type; // Ініціалізація типу тренування
+        this.type = type;
         this.exercises = new ArrayList<>();
     }
 
-    // Геттери та сеттери
     public String getId() {
         return id;
     }

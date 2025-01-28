@@ -1,3 +1,5 @@
+package main.cods.Trainify.service;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.File;
@@ -8,6 +10,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import main.cods.Trainify.Main;
+import main.cods.Trainify.model.TrainingPlan;
+import main.cods.Trainify.model.TrainingPlans;
+import main.cods.Trainify.model.Workout;
 
 public class TrainingPlanManager {
 

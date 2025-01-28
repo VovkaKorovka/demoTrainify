@@ -1,9 +1,11 @@
+package main.cods.Trainify.model;
+
 public class Exercise {
 
     private String id;
     private String name;
     private String description;
-    private String type; // Added field for exercise type
+    private String type;
     private int reps;
     private int sets;
     private String workoutId;

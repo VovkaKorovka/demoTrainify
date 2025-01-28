@@ -1,4 +1,8 @@
+package main.cods.Trainify.menu;
+
 import java.util.Scanner;
+import main.cods.Trainify.Main;
+import main.cods.Trainify.service.TrainingPlanManager;
 
 public class TrainifyMenu {
 

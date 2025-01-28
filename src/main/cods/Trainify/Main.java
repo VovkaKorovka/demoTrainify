@@ -1,4 +1,8 @@
+package main.cods.Trainify;
+
 import java.util.Scanner;
+import main.cods.Trainify.menu.TrainifyMenu;
+import main.cods.Trainify.service.UserService;
 
 public class Main {
 
@@ -15,9 +19,7 @@ public class Main {
         } else {
             while (running) {
                 showMenu();
-
                 String choice = scanner.nextLine();
-
                 switch (choice) {
                     case "1":
                         handleRegistration();
@@ -47,9 +49,7 @@ public class Main {
             System.out.println("2. Вхід до системи");
             System.out.println("3. Вийти з програми");
             System.out.print("Оберіть опцію: ");
-
             String choice = scanner.nextLine();
-
             switch (choice) {
                 case "1":
                     handleRegistration();

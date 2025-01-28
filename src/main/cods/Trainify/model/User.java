@@ -1,3 +1,5 @@
+package main.cods.Trainify.model;
+
 public class User {
 
     private String id;

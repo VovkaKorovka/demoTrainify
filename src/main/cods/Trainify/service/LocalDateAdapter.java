@@ -1,3 +1,5 @@
+package main.cods.Trainify.service;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;

@@ -1,16 +1,17 @@
+package main.cods.Trainify.model;
+
 import java.time.LocalDate;
 import java.util.List;
 
 public class TrainingPlan {
 
-    private String planId; // Забираємо final, щоб мати можливість змінювати planId
+    private String planId;
     private LocalDate startDate;
     private LocalDate endDate;
     private String userId;
     private String description;
-    private List<Workout> workouts; // Список тренувань має бути типу Workout, а не String
+    private List<Workout> workouts;
 
-    // Конструктор
     public TrainingPlan(String planId, LocalDate startDate, LocalDate endDate, String userId,
         String description, List<Workout> workouts) {
         this.planId = planId;
@@ -26,7 +27,7 @@ public class TrainingPlan {
     }
 
     public void setPlanId(String planId) {
-        this.planId = planId;  // Тепер є можливість змінювати planId
+        this.planId = planId;
     }
 
     public LocalDate getStartDate() {

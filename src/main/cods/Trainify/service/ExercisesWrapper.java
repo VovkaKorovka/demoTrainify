@@ -1,4 +1,7 @@
+package main.cods.Trainify.service;
+
 import java.util.List;
+import main.cods.Trainify.model.Exercise;
 
 public class ExercisesWrapper {
 

@@ -1,3 +1,5 @@
+package main.cods.Trainify.service;
+
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileReader;
@@ -11,6 +13,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
+import main.cods.Trainify.Main;
+import main.cods.Trainify.model.Exercise;
+import main.cods.Trainify.model.TrainingPlan;
+import main.cods.Trainify.model.TrainingPlans;
+import main.cods.Trainify.model.Workout;
 
 public class WorkoutManage {
 
