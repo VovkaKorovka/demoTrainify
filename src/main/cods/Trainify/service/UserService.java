@@ -255,10 +255,9 @@ public class UserService {
 
     private List<User> loadUsersFromFile() {
         File file = new File(FILE_PATH);
-        // Перевірка, чи існує папка, і якщо ні, створення її
         File parentDir = file.getParentFile();
         if (!parentDir.exists()) {
-            parentDir.mkdirs(); // Створення папки, якщо вона не існує
+            parentDir.mkdirs();
         }
 
         try (FileReader reader = new FileReader(FILE_PATH)) {
@@ -272,10 +271,9 @@ public class UserService {
 
     private void saveUsersToFile() {
         File file = new File(FILE_PATH);
-        // Перевірка, чи існує папка, і якщо ні, створення її
         File parentDir = file.getParentFile();
         if (!parentDir.exists()) {
-            parentDir.mkdirs(); // Створення папки, якщо вона не існує
+            parentDir.mkdirs();
         }
 
         try (FileWriter writer = new FileWriter(FILE_PATH)) {

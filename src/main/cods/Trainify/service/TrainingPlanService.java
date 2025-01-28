@@ -1,5 +1,7 @@
 package main.cods.Trainify.service;
 
+import static main.cods.Trainify.service.ClearConsoleService.clearConsole;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.File;
@@ -15,23 +17,22 @@ import main.cods.Trainify.model.TrainingPlan;
 import main.cods.Trainify.model.TrainingPlans;
 import main.cods.Trainify.model.Workout;
 
-public class TrainingPlanManager {
+public class TrainingPlanService {
 
     public static void createTrainingPlan(String userId) {
         Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())  // Реєстрація адаптера
-            .setPrettyPrinting()  // Зробить серіалізацію "гарною" (з відступами)
+            .registerTypeAdapter(LocalDate.class,
+                new LocalDateAdapterService())
+            .setPrettyPrinting()
             .create();
         Scanner scanner = new Scanner(System.in);
         LocalDate currentDate = LocalDate.now();
 
-        Main.clearConsole();
+        clearConsole();
         System.out.println("=== Створення нового плану тренувань ===");
 
-        // Введення року, місяця та дня початку плану
         int year = -1, month = -1, day = -1;
 
-        // Введення року
         System.out.print("Введіть рік початку плану: ");
         while (year <= 0) {
             if (scanner.hasNextInt()) {
@@ -41,11 +42,10 @@ public class TrainingPlanManager {
                 }
             } else {
                 System.out.print("Введіть коректний рік (позитивне число): ");
-                scanner.next(); // Очищення вводу
+                scanner.next();
             }
         }
 
-        // Введення місяця
         System.out.print("Введіть місяць початку плану (1-12): ");
         while (month < 1 || month > 12) {
             if (scanner.hasNextInt()) {
@@ -55,11 +55,10 @@ public class TrainingPlanManager {
                 }
             } else {
                 System.out.print("Введіть коректний місяць (1-12): ");
-                scanner.next(); // Очищення вводу
+                scanner.next();
             }
         }
 
-        // Введення дня
         System.out.print("Введіть день початку плану (1-31): ");
         while (day < 1 || day > 31) {
             if (scanner.hasNextInt()) {
@@ -69,11 +68,11 @@ public class TrainingPlanManager {
                 }
             } else {
                 System.out.print("Введіть коректний день (1-31): ");
-                scanner.next(); // Очищення вводу
+                scanner.next();
             }
         }
 
-        scanner.nextLine(); // Очищення буфера після числових введень
+        scanner.nextLine();
         LocalDate startDate = null;
         try {
             startDate = LocalDate.of(year, month, day);
@@ -83,7 +82,7 @@ public class TrainingPlanManager {
         }
 
         if (startDate.isBefore(currentDate)) {
-            Main.clearConsole();
+            clearConsole();
             System.out.println("Помилка: Дата початку не може бути в минулому.");
             return;
         }
@@ -91,7 +90,6 @@ public class TrainingPlanManager {
         System.out.print("Введіть опис нового плану тренувань: ");
         String description = scanner.nextLine();
 
-        // Введення кінцевої дати
         int endYear = -1, endMonth = -1, endDay = -1;
         System.out.print("Введіть рік кінцевої дати: ");
         while (endYear <= 0) {
@@ -102,7 +100,7 @@ public class TrainingPlanManager {
                 }
             } else {
                 System.out.print("Введіть коректний рік (позитивне число): ");
-                scanner.next(); // Очищення вводу
+                scanner.next();
             }
         }
 
@@ -115,7 +113,7 @@ public class TrainingPlanManager {
                 }
             } else {
                 System.out.print("Введіть коректний місяць (1-12): ");
-                scanner.next(); // Очищення вводу
+                scanner.next();
             }
         }
 
@@ -128,11 +126,11 @@ public class TrainingPlanManager {
                 }
             } else {
                 System.out.print("Введіть коректний день (1-31): ");
-                scanner.next(); // Очищення вводу
+                scanner.next();
             }
         }
 
-        scanner.nextLine(); // Очищення буфера
+        scanner.nextLine();
         LocalDate endDate = null;
         try {
             endDate = LocalDate.of(endYear, endMonth, endDay);
@@ -150,7 +148,6 @@ public class TrainingPlanManager {
 
         String planId = getNextPlanId(userId);
 
-        // Шлях до загального файлу з планами
         String userDirPath = "C:\\Users\\payda\\Desktop\\demoTrainify\\Users_Plans\\User(" + userId
             + ")_TrainingPlans";
         File userDir = new File(userDirPath);
@@ -169,7 +166,6 @@ public class TrainingPlanManager {
 
         TrainingPlans trainingPlans = new TrainingPlans();
 
-        // Перевірка на наявність файлу
         if (jsonFile.exists()) {
             try (Scanner fileScanner = new Scanner(jsonFile)) {
                 String jsonContent = fileScanner.useDelimiter("\\A").next();
@@ -179,7 +175,6 @@ public class TrainingPlanManager {
                 return;
             }
         } else {
-            // Якщо файл не існує, створюємо порожній об'єкт
             trainingPlans = new TrainingPlans();
         }
 
@@ -191,10 +186,10 @@ public class TrainingPlanManager {
             try {
                 System.out.println("Новий план тренувань створено");
                 Thread.sleep(2000);
-                Main.clearConsole();
+                clearConsole();
             } catch (InterruptedException e) {
                 System.out.println("Помилка при затримці: " + e.getMessage());
-                Thread.currentThread().interrupt();  // Відновлюємо статус переривання
+                Thread.currentThread().interrupt();
             }
         } catch (IOException e) {
             System.out.println("Помилка при записі в JSON-файл: " + e.getMessage());
@@ -213,14 +208,14 @@ public class TrainingPlanManager {
         }
 
         Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+            .registerTypeAdapter(LocalDate.class, new LocalDateAdapterService())
             .setPrettyPrinting()
             .create();
 
         try (Scanner scanner = new Scanner(jsonFile)) {
             String jsonContent = scanner.useDelimiter("\\A").next();
             TrainingPlans trainingPlans = gson.fromJson(jsonContent, TrainingPlans.class);
-            Main.clearConsole();
+            clearConsole();
             System.out.println("Кількість планів: " + trainingPlans.getPlans().size());
             if (trainingPlans.getPlans() == null || trainingPlans.getPlans().isEmpty()) {
                 System.out.println("У вас немає збережених планів тренувань.");
@@ -241,7 +236,7 @@ public class TrainingPlanManager {
             String userInput = input.nextLine().trim();
 
             if ("0".equals(userInput)) {
-                Main.clearConsole();
+                clearConsole();
                 System.out.println("Повернення в меню...");
             } else if ("-".equals(userInput)) {
                 System.out.println("Виберіть план для видалення:");
@@ -251,7 +246,6 @@ public class TrainingPlanManager {
                     return;
                 }
 
-                // Видалення плану
                 trainingPlans.getPlans().remove(deletePlanIndex);
 
                 try (FileWriter writer = new FileWriter(jsonFile)) {
@@ -263,16 +257,14 @@ public class TrainingPlanManager {
             } else {
                 try {
                     int planIndex = Integer.parseInt(userInput)
-                        - 1; // Вибір плану за індексом (мінус 1 для коректності індексації)
+                        - 1;
                     if (planIndex < 0 || planIndex >= trainingPlans.getPlans().size()) {
                         System.out.println("Невірний номер плану.");
                         return;
                     }
 
-                    // Якщо вибрано існуючий план, передаємо його для подальшої обробки
                     TrainingPlan selectedPlan = trainingPlans.getPlans().get(planIndex);
-                    // Передаємо вибраний план у WorkoutManage
-                    WorkoutManage.manageWorkouts(selectedPlan, jsonFile, gson, trainingPlans);
+                    WorkoutService.manageWorkouts(selectedPlan, jsonFile, gson, trainingPlans);
                 } catch (NumberFormatException e) {
                     System.out.println("Невірний ввід. Спробуйте ще раз.");
                 }
@@ -289,12 +281,11 @@ public class TrainingPlanManager {
         File jsonFile = new File(userDir, "trainingPlans.json");
 
         if (!jsonFile.exists()) {
-            // Якщо файлу ще не існує, починаємо з 1
             return "1";
         }
 
         Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+            .registerTypeAdapter(LocalDate.class, new LocalDateAdapterService())
             .setPrettyPrinting()
             .create();
 
@@ -305,12 +296,11 @@ public class TrainingPlanManager {
             trainingPlans = gson.fromJson(jsonContent, TrainingPlans.class);
         } catch (IOException e) {
             System.out.println("Помилка при зчитуванні існуючих планів: " + e.getMessage());
-            return "1"; // Якщо сталася помилка при зчитуванні, почнемо з 1
+            return "1";
         }
 
         int maxId = 0;
 
-        // Проходимо по всіх планах і знаходимо максимальний ID
         for (TrainingPlan plan : trainingPlans.getPlans()) {
             try {
                 int currentId = Integer.parseInt(plan.getPlanId());
@@ -318,11 +308,9 @@ public class TrainingPlanManager {
                     maxId = currentId;
                 }
             } catch (NumberFormatException e) {
-                // Якщо ID не є числом (що малоймовірно), просто ігноруємо цей план
             }
         }
 
-        // Повертаємо наступний ID
         return String.valueOf(maxId + 1);
     }
 
@@ -344,7 +332,7 @@ public class TrainingPlanManager {
 
         try {
             System.out.println("До побачення!");
-            Main.clearConsole();
+            clearConsole();
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             System.out.println("Помилка при затримці: " + e.getMessage());

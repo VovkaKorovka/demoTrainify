@@ -1,6 +1,10 @@
 package main.cods.Trainify;
 
+import static main.cods.Trainify.service.ClearConsoleService.clearConsole;
+
 import java.util.Scanner;
+import main.cods.Trainify.menu.LoginMenu;
+import main.cods.Trainify.menu.SignUpMenu;
 import main.cods.Trainify.menu.TrainifyMenu;
 import main.cods.Trainify.service.UserService;
 
@@ -22,10 +26,10 @@ public class Main {
                 String choice = scanner.nextLine();
                 switch (choice) {
                     case "1":
-                        handleRegistration();
+                        SignUpMenu.showSignUpMenu();
                         break;
                     case "2":
-                        handleLogin();
+                        LoginMenu.showLoginMenu();
                         break;
                     case "3":
                         System.out.println("До побачення!");
@@ -52,10 +56,10 @@ public class Main {
             String choice = scanner.nextLine();
             switch (choice) {
                 case "1":
-                    handleRegistration();
+                    SignUpMenu.showSignUpMenu();
                     break;
                 case "2":
-                    handleLogin();
+                    LoginMenu.showLoginMenu();
                     break;
                 case "3":
                     System.out.println("До побачення!");
@@ -65,75 +69,6 @@ public class Main {
                     clearConsole();
                     System.out.println("Невірний вибір. Спробуйте ще раз.");
             }
-        }
-    }
-
-    private static void handleRegistration() {
-        String name = userService.getValidatedInput("Введіть ім'я користувача (3-20 символів): ",
-            "name");
-        if (name == null) {
-            return;
-        }
-
-        String password = userService.getValidatedInput(
-            "Введіть пароль (6-20 символів і хоча б одну цифру): ", "password");
-        if (password == null) {
-            return;
-        }
-
-        String email = userService.getValidatedInput("Введіть email (для подальшої перевірки): ",
-            "email");
-        if (email == null) {
-            return;
-        }
-
-        if (userService.register(name, password, email)) {
-            System.out.println("Реєстрація успішна!");
-            clearConsole();
-            String userId = userService.getUserIdByName(name);
-            TrainifyMenu.showUserMenu(name, userId);
-        } else {
-            System.out.println("Помилка при реєстрації.");
-        }
-    }
-
-    public static void clearConsole() {
-        try {
-            String os = System.getProperty("os.name").toLowerCase();
-            if (os.contains("win")) {
-                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            } else {
-                System.out.print("\033[H\033[2J");
-                System.out.flush();
-            }
-        } catch (Exception e) {
-            System.out.println("Не вдалося очистити консоль.");
-        }
-        for (int i = 0; i < 50; i++) {
-            System.out.println();
-        }
-    }
-
-    private static void handleLogin() {
-        String name = userService.getValidatedInput("Введіть ім'я користувача: ", "name");
-        if (name == null) {
-            return;
-        }
-
-        String password = userService.getValidatedInput("Введіть пароль: ", "password");
-        if (password == null) {
-            return;
-        }
-
-        if (userService.login(name, password)) {
-            System.out.println("Вхід виконано успішно! Вітаємо, " + name + "!");
-            clearConsole();
-            String userId = userService.getUserIdByName(name);
-            TrainifyMenu.showUserMenu(name, userId);
-        } else {
-            clearConsole();
-            System.out.println("Невірне ім'я користувача або пароль.");
-            showMenu();
         }
     }
 }

@@ -1,8 +1,9 @@
 package main.cods.Trainify.menu;
 
+import static main.cods.Trainify.service.ClearConsoleService.clearConsole;
+
 import java.util.Scanner;
-import main.cods.Trainify.Main;
-import main.cods.Trainify.service.TrainingPlanManager;
+import main.cods.Trainify.service.TrainingPlanService;
 
 public class TrainifyMenu {
 
@@ -23,19 +24,19 @@ public class TrainifyMenu {
 
             switch (choice) {
                 case "1":
-                    TrainingPlanManager.createTrainingPlan(userId);
+                    TrainingPlanService.createTrainingPlan(userId);
                     break;
                 case "2":
-                    TrainingPlanManager.manageTrainingPlan(userId);
+                    TrainingPlanService.manageTrainingPlan(userId);
                     break;
                 case "3":
-                    TrainingPlanManager.logOut(userId);
+                    TrainingPlanService.logOut(userId);
                     break;
                 case "4":
                     System.out.println("До побачення!");
                     System.exit(0);
                 default:
-                    Main.clearConsole();
+                    clearConsole();
                     System.out.println("Невірний вибір. Спробуйте ще раз.");
             }
         }

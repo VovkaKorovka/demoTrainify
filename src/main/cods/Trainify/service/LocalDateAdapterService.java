@@ -10,7 +10,8 @@ import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class LocalDateAdapter implements JsonDeserializer<LocalDate>, JsonSerializer<LocalDate> {
+public class LocalDateAdapterService implements JsonDeserializer<LocalDate>,
+    JsonSerializer<LocalDate> {
 
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
