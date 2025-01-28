@@ -1,19 +1,26 @@
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Workout {
 
-    private String id;                // Унікальний ідентифікатор тренування
-    private String name;              // Назва тренування
-    private String description;       // Опис тренування
-    private int duration;             // Тривалість тренування у хвилинах
-    private Date date;           // Дата тренування
+    private String id;
+    private String name;
+    private String description;
+    private int duration; // Тривалість у хвилинах
+    private Date date;
+    private String type; // Тип тренування (наприклад: "Кардіо", "Сила" тощо)
+    private List<Exercise> exercises; // Список вправ
 
-    public Workout(String id, String name, String description, int duration, Date date) {
+    public Workout(String id, String name, String description, int duration, Date date,
+        String type) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.duration = duration;
         this.date = date;
+        this.type = type; // Ініціалізація типу тренування
+        this.exercises = new ArrayList<>();
     }
 
     // Геттери та сеттери
@@ -57,14 +64,19 @@ public class Workout {
         this.date = date;
     }
 
-    @Override
-    public String toString() {
-        return "Workout{" +
-            "id='" + id + '\'' +
-            ", name='" + name + '\'' +
-            ", description='" + description + '\'' +
-            ", duration=" + duration +
-            ", date=" + date +
-            '}';
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public List<Exercise> getExercises() {
+        return exercises;
+    }
+
+    public void setExercises(List<Exercise> exercises) {
+        this.exercises = exercises;
     }
 }

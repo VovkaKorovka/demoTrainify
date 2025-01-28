@@ -3,15 +3,17 @@ public class Exercise {
     private String id;
     private String name;
     private String description;
+    private String type; // Added field for exercise type
     private int reps;
     private int sets;
     private String workoutId;
 
-    public Exercise(String id, String name, String description, int reps, int sets,
+    public Exercise(String id, String name, String description, String type, int reps, int sets,
         String workoutId) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.type = type;
         this.reps = reps;
         this.sets = sets;
         this.workoutId = workoutId;
@@ -39,6 +41,14 @@ public class Exercise {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public int getReps() {

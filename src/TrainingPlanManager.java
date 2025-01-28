@@ -214,7 +214,7 @@ public class TrainingPlanManager {
         try (Scanner scanner = new Scanner(jsonFile)) {
             String jsonContent = scanner.useDelimiter("\\A").next();
             TrainingPlans trainingPlans = gson.fromJson(jsonContent, TrainingPlans.class);
-
+            Main.clearConsole();
             System.out.println("Кількість планів: " + trainingPlans.getPlans().size());
             if (trainingPlans.getPlans() == null || trainingPlans.getPlans().isEmpty()) {
                 System.out.println("У вас немає збережених планів тренувань.");
@@ -235,6 +235,7 @@ public class TrainingPlanManager {
             String userInput = input.nextLine().trim();
 
             if ("0".equals(userInput)) {
+                Main.clearConsole();
                 System.out.println("Повернення в меню...");
             } else if ("-".equals(userInput)) {
                 System.out.println("Виберіть план для видалення:");
