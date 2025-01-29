@@ -316,7 +316,7 @@ public class TrainingPlanService {
 
     public static void logOut(String userId) {
         String configFilePath =
-            "C:\\Users\\payda\\Desktop\\demoTrainify\\config.json";
+            "C:\\Users\\payda\\Desktop\\demoTrainify\\src\\main\\resources\\config.json";
         File configFile = new File(configFilePath);
 
         if (configFile.exists()) {
