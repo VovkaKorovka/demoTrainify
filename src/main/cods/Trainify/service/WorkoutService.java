@@ -1,7 +1,5 @@
 package main.cods.Trainify.service;
 
-import static main.cods.Trainify.service.ClearConsoleService.clearConsole;
-
 import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileReader;
@@ -25,12 +23,12 @@ public class WorkoutService {
 
     private static final List<String> WORKOUT_TYPES = Arrays.asList("Силове", "Кардіо", "Йога",
         "Плавання", "Біг");
-    private static final String EXERCISES_FILE = "Exercises\\exercises.json";
+    private static final String EXERCISES_FILE = "C:\\Users\\payda\\Desktop\\demoTrainify\\src\\main\\resources\\exercises.json";
 
     public static void manageWorkouts(TrainingPlan plan, File jsonFile, Gson gson,
         TrainingPlans trainingPlans) {
         boolean exit = false;
-        Scanner input = new Scanner(System.in);
+        Scanner input = new Scanner(System.in);  // Створюємо Scanner для вводу користувача
 
         while (!exit) {
             WorkoutMenu.displayTrainingPlanMenu(plan);
@@ -43,10 +41,11 @@ public class WorkoutService {
                     exit = true;
                     break;
                 case "+":
-                    addWorkout(plan, gson);
+                    addWorkout(plan);
                     break;
                 default:
-                    handleAction(action, plan, gson);
+                    handleAction(action, plan, gson, trainingPlans, jsonFile,
+                        input);  // Додаємо input до виклику
                     break;
             }
 
@@ -54,7 +53,8 @@ public class WorkoutService {
         }
     }
 
-    public static void handleAction(String action, TrainingPlan plan, Gson gson) {
+    public static void handleAction(String action, TrainingPlan plan, Gson gson,
+        TrainingPlans trainingPlans, File jsonFile, Scanner input) {
         if (action.startsWith("-")) {
             int index = parseIndex(action.substring(1), plan);
             if (index != -1) {
@@ -69,7 +69,8 @@ public class WorkoutService {
             try {
                 int index = Integer.parseInt(action) - 1;
                 if (isValidIndex(index, plan)) {
-                    manageExercises(plan.getWorkouts().get(index), gson);
+                    manageExercises(plan.getWorkouts().get(index), gson, trainingPlans, jsonFile,
+                        input); // Передаємо input
                 }
             } catch (NumberFormatException e) {
                 System.out.println("Помилка: введено некоректний формат.");
@@ -137,9 +138,9 @@ public class WorkoutService {
         return -1;
     }
 
-    private static void manageExercises(Workout workout, Gson gson) {
+    public static void manageExercises(Workout workout, Gson gson, TrainingPlans trainingPlans,
+        File jsonFile, Scanner input) {
         boolean exit = false;
-        Scanner input = new Scanner(System.in);
 
         while (!exit) {
             WorkoutMenu.displayWorkoutMenu(workout);
@@ -152,7 +153,7 @@ public class WorkoutService {
                     exit = true;
                     break;
                 case "1":
-                    addExercise(workout, gson);
+                    addExercise(workout, gson, trainingPlans, jsonFile);
                     break;
                 case "2":
                     deleteExercise(workout);
@@ -169,9 +170,8 @@ public class WorkoutService {
         }
     }
 
-    public static void addWorkout(TrainingPlan plan, Gson gson) {
+    public static void addWorkout(TrainingPlan plan) {
         Scanner input = new Scanner(System.in);
-        clearConsole();
         System.out.println("\n=== Додавання тренування ===");
         System.out.println("Доступні типи тренувань:");
         for (int i = 0; i < WORKOUT_TYPES.size(); i++) {
@@ -179,19 +179,16 @@ public class WorkoutService {
         }
         System.out.println("0. Відміна");
 
-        int typeIndex = -1;
-        while (typeIndex < 0 || typeIndex > WORKOUT_TYPES.size()) {
-            System.out.print("Оберіть тип тренування (0-" + WORKOUT_TYPES.size() + "): ");
-            typeIndex = input.nextInt() - 1;
-            if (typeIndex == -1) {
-                System.out.println("Додавання тренування відмінено.");
-                return;
-            }
+        int typeIndex =
+            getValidIntInput(input, "Оберіть тип тренування (0-" + WORKOUT_TYPES.size() + "): ", 0,
+                WORKOUT_TYPES.size()) - 1;
+        if (typeIndex == -1) {
+            System.out.println("Додавання тренування відмінено.");
+            return;
         }
-
         String type = WORKOUT_TYPES.get(typeIndex);
 
-        input.nextLine();
+        input.nextLine(); // Очищення буфера
         System.out.print("Опис тренування (або введіть 0 для відміни): ");
         String description = input.nextLine();
         if (description.equals("0")) {
@@ -199,27 +196,21 @@ public class WorkoutService {
             return;
         }
 
-        String name = "";
-        while (name.trim().isEmpty()) {
+        String name;
+        do {
             System.out.print("Введіть назву тренування: ");
-            name = input.nextLine();
-            if (name.trim().isEmpty()) {
-                System.out.println(
-                    "Назва тренування не може бути порожньою або складатися тільки з пробілів. Спробуйте ще раз.");
+            name = input.nextLine().trim();
+            if (name.isEmpty()) {
+                System.out.println("Назва тренування не може бути порожньою. Спробуйте ще раз.");
             }
-        }
+        } while (name.isEmpty());
 
         Date date = null;
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
         while (date == null) {
-            System.out.print("Введіть рік дати тренування: ");
-            int year = input.nextInt();
-
-            System.out.print("Введіть місяць дати тренування (1-12): ");
-            int month = input.nextInt();
-
-            System.out.print("Введіть день дати тренування (1-31): ");
-            int day = input.nextInt();
+            int year = getValidIntInput(input, "Введіть рік дати тренування: ", 1900, 2100);
+            int month = getValidIntInput(input, "Введіть місяць дати тренування (1-12): ", 1, 12);
+            int day = getValidIntInput(input, "Введіть день дати тренування (1-31): ", 1, 31);
 
             try {
                 String dateString = String.format("%02d-%02d-%d", day, month, year);
@@ -229,20 +220,33 @@ public class WorkoutService {
             }
         }
 
-        String id = String.valueOf(plan.getWorkouts().size() + 1);
-        Workout newWorkout = new Workout(id, name, description, 0, date,
+        Workout newWorkout = new Workout(UUID.randomUUID().toString(), name, description, 0, date,
             type);
         plan.getWorkouts().add(newWorkout);
         System.out.println("Тренування успішно додано!");
+    }
 
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+    private static int getValidIntInput(Scanner input, String message, int min, int max) {
+        int value;
+        while (true) {
+            System.out.print(message);
+            if (input.hasNextInt()) {
+                value = input.nextInt();
+                if (value >= min && value <= max) {
+                    return value;
+                } else {
+                    System.out.println(
+                        "Некоректне значення! Введіть число в межах " + min + "-" + max + ".");
+                }
+            } else {
+                System.out.println("Помилка! Введіть ціле число.");
+                input.next(); // Очищення некоректного введення
+            }
         }
     }
 
-    public static void addExercise(Workout workout, Gson gson) {
+    public static void addExercise(Workout workout, Gson gson, TrainingPlans trainingPlans,
+        File jsonFile) {
         Scanner input = new Scanner(System.in);
 
         List<Exercise> exercises = loadExercisesFromFile(gson);
@@ -316,6 +320,9 @@ public class WorkoutService {
             workout.getExercises().add(newExercise);
 
             System.out.println("Вправа успішно додана!");
+
+            // Збереження після додавання вправи
+            savePlansToFile(trainingPlans, jsonFile, gson);
         } else {
             System.out.println("Некоректний вибір вправи.");
         }
@@ -410,7 +417,7 @@ public class WorkoutService {
             }
         }
 
-        System.out.println("\nНатисніть Enter, щоб повернутись в меню.");
+        System.out.println("\nНатисніть Enter, щоб продовжити.");
         input.nextLine();
     }
 

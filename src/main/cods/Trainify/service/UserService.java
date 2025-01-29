@@ -30,7 +30,7 @@ import java.util.Scanner;
 public class UserService {
 
     private static final String FILE_PATH = "C:\\Users\\payda\\Desktop\\demoTrainify\\Data\\users.json";
-    private static final String CONFIG_FILE_PATH = "config.json";
+    private static final String CONFIG_FILE_PATH = "C:\\Users\\payda\\Desktop\\demoTrainify\\src\\main\\resources\\config.json";
     private static final Scanner scanner = new Scanner(System.in);
     private final List<User> users;
     private final Map<String, VerificationDetails> emailVerificationCodes = new HashMap<>();
